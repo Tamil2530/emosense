@@ -30,9 +30,9 @@ const EmotionDetector = ({}) => {
         }, 1000);
     }
     let loadModels = async () => {
-        let MODEL_URL="/face-api.js-models"
-        await faceapi.nets.tinyFaceDetector.loadFromUri(`${MODEL_URL}/tiny_face_detector`)
-        await faceapi.nets.faceExpressionNet.loadFromUri(`${MODEL_URL}/face_expression`)
+        const MODEL_URL = "/face-api.js-models";
+        await faceapi.nets.tinyFaceDetector.loadFromUri(`${MODEL_URL}/tiny_face_detector`);
+        await faceapi.nets.faceExpressionNet.loadFromUri(`${MODEL_URL}/face_expression`);
         console.log("models done");
         
         setModelLoad(true)
