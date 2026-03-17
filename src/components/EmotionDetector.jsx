@@ -13,9 +13,10 @@ const EmotionDetector = ({}) => {
     let[modelsLoad,setModelLoad]=useState(false)
 
     useEffect(() => {
-        let intravel
-
        startVedio()
+
+       let intravel
+
        loadModels().then(()=>{
         intravel=setInterval(detectEmotion,1000)
        })
@@ -26,14 +27,13 @@ const EmotionDetector = ({}) => {
         navigator.mediaDevices.getUserMedia({ video:true })
         .then(stream =>{
             vedioRef.current.srcObject=stream;
+            vedioRef.current.onloadedmetadata=()=>{
+                vedioRef.current.play()
+            }
         })
         .catch(err=> console.error(err))
     }
-    let startDetection=()=>{
-        setInterval(() => {
-            detectEmotion()
-        }, 1000);
-    }
+
     let loadModels = async () => {
         const MODEL_URL = "/face-api.js-models";
         await faceapi.nets.tinyFaceDetector.loadFromUri(`${MODEL_URL}/tiny_face_detector`);
@@ -42,21 +42,25 @@ const EmotionDetector = ({}) => {
         
         setModelLoad(true)
 
-        startDetection()
+        // startDetection()
     }
+
+    
+
+
     let detectEmotion = async () => {
-        // if (!modelsLoad){
-        //     alert("Model is still loading")
-        //     return
-        // }
+  
         if (!vedioRef.current|| !canvasRef.current) return
         let detection = await faceapi.detectSingleFace(vedioRef.current,new faceapi.TinyFaceDetectorOptions()).withFaceExpressions()
 
         let canvas = canvasRef.current
 
+        let video = vedioRef.current
+        if(video.videoWidth === 0 || video.videoWidth === 0 || video.readyState !==4) return
+        if (!video) return
         let displaysize ={
-            width: vedioRef.current.width,
-            height: vedioRef.current.height
+            width: video.videoWidth,
+            height: video.videoHeight
         }
 
         faceapi.matchDimensions(canvas,displaysize)
@@ -65,16 +69,7 @@ const EmotionDetector = ({}) => {
 
         ctx.clearRect(0,0,canvas.width,canvas.height)
 
-        let startVedio=()=>{
-            navigator.mediaDevices.getUserMedia({video:true})
-            .then(stream=>{
-                vedioRef.current.srcObject = stream
-                vedioRef.current.onloadedmetadata = ()=>{
-                    vedioRef.current.play()
-                }
-            })
-            .catch(err => console.error(err))
-        }
+
         
         if (!detection){
             setEmotion("Detecting......")
@@ -105,7 +100,7 @@ const EmotionDetector = ({}) => {
     <div className="bg-gray-900 text-white flex flex-col items-center p-6">
         <h2 className="text-3xl font-bold mb-6 text-red-500">EmotionDetector 🎭</h2>
         <div className="relative">
-        <video ref={vedioRef} autoPlay playsInline width="400" height="300" className="rounded-xl shadow-lg border-2 border-gray-700"></video><br />
+        <video ref={vedioRef} autoPlay playsInline className="w-full max-w-md h-auto rounded-xl shadow-lg border-2 border-gray-700"></video><br />
         <canvas ref={canvasRef} style={{position:"absolute",top:0,left:0}}/>
         </div>
         {/* <button onClick={detectEmotion}>Detect the Emotion</button> */}
