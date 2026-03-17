@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { EmotionContext } from '../App'
 
 // let {emotion}=useContext(EmotionContext)
-
+let API_KEY = import.meta.env.VITE_TMDB_API_KEY
 const Recommendation = ({}) => {
   let {emotion}=useContext(EmotionContext)
   let [movie,setMovie]=useState([])
@@ -16,7 +16,7 @@ const Recommendation = ({}) => {
   let [trailer,setTrailer] = useState(null)
 
   let getTrailer = async (movieId) => {
-    let res = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=69a335ccae2d98d4b1244029b43fa0bd`)
+    let res = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${API_KEY}`)
     let data = await res.json()
 
     let trail= data.results.find(
@@ -31,18 +31,13 @@ const Recommendation = ({}) => {
   useEffect(() => {
     if(!emotion||emotion=='Face not detected')return
     let fetchMovie = async () => {
-      // let res = await fetch("https://api.themoviedb.org/3/movie/popular?api_key=69a335ccae2d98d4b1244029b43fa0bd")
-      // let data = await res.json()
-      //  console.log(data)
-      // setMovie(data.results.slice(0,5))
-
-
+      
       let url=''
       let page = Math.floor(Math.random() * 5) + 1
       if (genreMap[emotion] !== null){
-        url=`https://api.themoviedb.org/3/discover/movie?api_key=69a335ccae2d98d4b1244029b43fa0bd&with_genres=${genreMap[emotion]}&sort_by=popularity.desc&page=${Math.floor(Math.random()*5)+1}`      }
+        url=`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genreMap[emotion]}&sort_by=popularity.desc&page=${Math.floor(Math.random()*5)+1}`      }
       else{
-        url=`https://api.themoviedb.org/3/movie/popular?api_key=69a335ccae2d98d4b1244029b43fa0bd&page=${page}`
+        url=`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=${page}`
       }
       if (emotion === "sad") {
         url = `https://api.themoviedb.org/3/discover/movie?api_key=KEY&with_genres=18&sort_by=vote_average.desc&page=2`

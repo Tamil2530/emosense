@@ -13,8 +13,13 @@ const EmotionDetector = ({}) => {
     let[modelsLoad,setModelLoad]=useState(false)
 
     useEffect(() => {
+        let intravel
+
        startVedio()
-       loadModels()
+       loadModels().then(()=>{
+        intravel=setInterval(detectEmotion,1000)
+       })
+       return() => clearInterval(intravel)
     }, [])
 
     let startVedio = ()=>{
@@ -58,10 +63,21 @@ const EmotionDetector = ({}) => {
 
         let ctx = canvas.getContext("2d")
 
-        ctx.clearRect(0,0,canvas.height,canvas.width)
+        ctx.clearRect(0,0,canvas.width,canvas.height)
+
+        let startVedio=()=>{
+            navigator.mediaDevices.getUserMedia({video:true})
+            .then(stream=>{
+                vedioRef.current.srcObject = stream
+                vedioRef.current.onloadedmetadata = ()=>{
+                    vedioRef.current.play()
+                }
+            })
+            .catch(err => console.error(err))
+        }
         
         if (!detection){
-            setEmotion("Face not detected")
+            setEmotion("Detecting......")
             return
         }        
 
